@@ -1,0 +1,241 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id             String          @id @default(cuid())
+  name           String
+  email          String          @unique
+  phone          String          @unique
+  gender         Gender          @default(PREFER_NOT_TO_SAY)
+  password       String
+  userType       UserType        @default(STUDENT)
+  isInit         Boolean         @default(false)
+  isActive       Boolean         @default(true)
+  seat           Seat?
+  sessions       Session[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  raisedIssues   Issue[]         @relation("RaisedIssues")
+  assignedIssues Issue[]         @relation("AssignedIssues")
+  assignedFloors Floor[]         @relation("WardenFloors")
+  livingHistory  LivingHistory[]
+  updates        Announcement[]  @relation("UserUpdates")
+  comments       Comment[]
+  reactions      Reaction[]
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessionToken String   @unique
+  deviceInfo   String?
+  ipAddress    String?
+  expires      DateTime
+  createdAt    DateTime @default(now())
+
+  @@index([userId])
+  @@index([sessionToken])
+}
+
+model Issue {
+  id           String      @id @default(cuid())
+  title        String
+  description  String
+  images       String[]
+  priority     Priority    @default(LOW)
+  groupTag     String?
+  group        IssueGroup? @relation(fields: [groupTag], references: [tag])
+  userId       String
+  raisedBy     User        @relation(fields: [userId], references: [id], name: "RaisedIssues")
+  roomId       String
+  room         Room        @relation(fields: [roomId], references: [id])
+  assignedToId String?
+  assignedTo   User?       @relation(fields: [assignedToId], references: [id], name: "AssignedIssues")
+  status       Status      @default(REPORTED)
+  events       Event[]
+  isPublic     Boolean     @default(false)
+  comments     Comment[]
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  remarks      String?
+
+  @@index([groupTag])
+}
+
+model IssueGroup {
+  id     String  @id @default(cuid())
+  tag    String  @unique
+  issues Issue[]
+}
+
+model Comment {
+  id        String    @id @default(cuid())
+  content   String
+  issueId   String?
+  issue     Issue?    @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  commentId String?
+  parent    Comment?  @relation("CommentReplies", fields: [commentId], references: [id], onDelete: Cascade)
+  replies   Comment[] @relation("CommentReplies")
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Reaction {
+  id        String         @id @default(cuid())
+  type      ReactionType
+  target    ReactionTarget
+  targetId  String
+  userId    String
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime       @default(now())
+
+  @@unique([targetId, userId])
+}
+
+model Announcement {
+  id           String   @id @default(cuid())
+  title        String
+  content      String
+  createdAt    DateTime @default(now())
+  targetPolicy Json
+  recipients   User[]   @relation("UserUpdates")
+}
+
+model Event {
+  id        String   @id @default(cuid())
+  issueId   String
+  issue     Issue    @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  timestamp DateTime @default(now())
+  status    Status
+  remarks   String?
+}
+
+model Seat {
+  id            String          @id @default(cuid())
+  seatNo        Int
+  room          Room            @relation(fields: [roomId], references: [id])
+  userId        String?         @unique
+  user          User?           @relation(fields: [userId], references: [id])
+  roomId        String
+  livingHistory LivingHistory[]
+
+  @@unique([seatNo, roomId])
+}
+
+model Room {
+  id           String  @id @default(cuid())
+  roomNo       Int
+  seats        Seat[]
+  floor        Floor   @relation(fields: [floorId], references: [id])
+  raisedIssues Issue[]
+  floorId      String
+
+  @@unique([roomNo, floorId])
+}
+
+model Floor {
+  id      String @id @default(cuid())
+  number  Int
+  rooms   Room[]
+  block   Block  @relation(fields: [blockId], references: [id])
+  wardens User[] @relation("WardenFloors")
+  blockId String
+
+  @@unique([number, blockId])
+}
+
+model Block {
+  id         String   @id @default(cuid())
+  name       String
+  floors     Floor[]
+  building   Building @relation(fields: [buildingId], references: [id])
+  buildingId String
+
+  @@unique([name, buildingId])
+}
+
+model Building {
+  id     String  @id @default(cuid())
+  name   String  @unique
+  blocks Block[]
+}
+
+model LivingHistory {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  seatId    String
+  seat      Seat      @relation(fields: [seatId], references: [id], onDelete: Cascade)
+  fromDate  DateTime
+  toDate    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+  @@index([seatId])
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+  PREFER_NOT_TO_SAY
+}
+
+enum UserType {
+  STUDENT
+  WARDEN
+  ADMIN
+  STAFF
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  EMERGENCY
+}
+
+enum Status {
+  REPORTED
+  ASSIGNED
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum UpdateTargetPolicy {
+  USERS
+  BUILDINGS
+  BLOCKS
+  FLOORS
+  ROOMS
+}
+
+enum ReactionType {
+  LIKE
+  DISLIKE
+  LOVE
+  LAUGH
+  ANGRY
+  SAD
+}
+
+enum ReactionTarget {
+  COMMENT
+  ISSUE
+}
