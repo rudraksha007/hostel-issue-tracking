@@ -16,7 +16,6 @@ const AuthPage = () => {
     // Signup state
     const [signupName, setSignupName] = useState<string>('');
     const [signupEmail, setSignupEmail] = useState<string>('');
-    const [signupUserId, setSignupUserId] = useState<number | null>(null);
     const [signupPassword, setSignupPassword] = useState<string>('');
     const [signupConfirmPassword, setSignupConfirmPassword] = useState<string>('');
     
@@ -129,12 +128,6 @@ const AuthPage = () => {
             return;
         }
 
-        const userIdError = validateUserId(signupUserId);
-        if (userIdError) {
-            setError(userIdError);
-            return;
-        }
-
         const passwordError = validatePassword(signupPassword);
         if (passwordError) {
             setError(passwordError);
@@ -156,7 +149,6 @@ const AuthPage = () => {
                 body: JSON.stringify({
                     name: signupName,
                     email: signupEmail,
-                    userid: signupUserId,
                     password: signupPassword,
                 }),
             });
@@ -172,7 +164,6 @@ const AuthPage = () => {
             // Clear signup form
             setSignupName('');
             setSignupEmail('');
-            setSignupUserId(null);
             setSignupPassword('');
             setSignupConfirmPassword('');
         } catch (err) {
@@ -258,7 +249,7 @@ const AuthPage = () => {
                                 onClick={() => handleTabChange('signup')}
                                 className={`flex-1 py-3 text-center font-semibold transition-colors ${
                                     activeTab === 'signup'
-                                        ? 'text-blue-600 border-b-1 border-blue-600'
+                                        ? 'text-blue-600 border-b-2 border-blue-600'
                                         : 'text-gray-500 hover:text-gray-700'
                                 }`}
                             >
@@ -281,7 +272,7 @@ const AuthPage = () => {
                         )}
 
                         {/* Forms Container with Fixed Height */}
-                        <div className="min-h-[420px] relative overflow-hidden">
+                        <div className="h-[520px] relative overflow-hidden">
                             {/* Login Form */}
                             <div
                                 className={`transition-all duration-500 ease-in-out ${
@@ -317,6 +308,7 @@ const AuthPage = () => {
                                                 Password
                                             </label>
                                             <input
+                                                type="password"
                                                 id="login-password"
                                                 value={loginPassword}
                                                 onChange={(e) => setLoginPassword(e.target.value)}
@@ -328,13 +320,15 @@ const AuthPage = () => {
                                                 8-12 characters with uppercase, number & special character
                                             </p>
                                         </div>
-                                        <button
-                                            type="submit"
-                                            disabled={loading}
-                                            className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors font-semibold"
-                                        >
-                                            {loading ? 'Logging in...' : 'Login'}
-                                        </button>
+                                        <div className="mt-50">
+                                            <button
+                                                type="submit"
+                                                disabled={loading}
+                                                className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors font-semibold"
+                                            >
+                                                {loading ? 'Logging in...' : 'Login'}
+                                            </button>
+                                        </div>
                                     </form>
                                 )}
                             </div>

@@ -56,8 +56,8 @@ model Issue {
   description  String
   images       String[]
   priority     Priority    @default(LOW)
-  groupTag     String?
-  group        IssueGroup? @relation(fields: [groupTag], references: [tag])
+  groupTag     String
+  group        IssueGroup @relation(fields: [groupTag], references: [id])
   userId       String
   raisedBy     User        @relation(fields: [userId], references: [id], name: "RaisedIssues")
   roomId       String
@@ -77,17 +77,16 @@ model Issue {
 
 model IssueGroup {
   id     String  @id @default(cuid())
-  tag    String  @unique
   issues Issue[]
 }
 
 model Comment {
   id        String    @id @default(cuid())
   content   String
-  issueId   String?
-  issue     Issue?    @relation(fields: [issueId], references: [id], onDelete: Cascade)
-  commentId String?
-  parent    Comment?  @relation("CommentReplies", fields: [commentId], references: [id], onDelete: Cascade)
+  issueId   String
+  issue     Issue     @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  parentId  String?
+  parent    Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
   replies   Comment[] @relation("CommentReplies")
   userId    String
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -113,6 +112,7 @@ model Announcement {
   content      String
   createdAt    DateTime @default(now())
   targetPolicy Json
+  images       String[]
   recipients   User[]   @relation("UserUpdates")
 }
 
@@ -238,4 +238,5 @@ enum ReactionType {
 enum ReactionTarget {
   COMMENT
   ISSUE
+  ANNOUNCEMENT
 }

@@ -2,12 +2,6 @@ import { prisma, type Prisma } from "@repo/db";
 import { AuthError } from "@repo/shared/errors";
 import type { Request } from "express";
 
-declare module "express" {
-    interface Request {
-        sessionToken?: string;
-    }
-}
-
 export function parseSession(req: Request, _: any, next: Function) {
     const token = req.cookies["session-token"];
     req.sessionToken = token || undefined;
