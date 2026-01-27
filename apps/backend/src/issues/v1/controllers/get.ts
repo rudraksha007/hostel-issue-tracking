@@ -1,16 +1,16 @@
 import { getUser } from "@/lib/middlewares/session";
-import { AuthError, ImpossibleTaskError } from "@repo/shared/errors";
+import { AuthError, ImpossibleTaskError, InvalidInputError } from "@repo/shared/errors";
 import { handleAPIError } from "@repo/shared/server";
-import { GetIssueRequest, sendResponse, type APIResponseT, type GetIssuesResponseT } from "@repo/shared/types/api";
+import { GetIssuesRequest, sendResponse } from "@repo/shared/types/api";
 import type { Request, Response } from "express";
 import { getIssue } from "../utils";
 import { getAllIssues } from "../services/get";
 
-export async function GetIssueController(req: Request, res: Response) {
+export async function GetIssuesController(req: Request, res: Response) {
     try {
         const user = await getUser(req, { id: true, userType: true });
         if (!user) throw new AuthError("Unauthorized");
-        const data = GetIssueRequest.parse(req.body);
+        const data = GetIssuesRequest.parse(req.body);
         if (data.isPublic || user.userType === 'ADMIN') {}
         else if (data.issueId) {
             let allowed = false;
@@ -28,6 +28,30 @@ export async function GetIssueController(req: Request, res: Response) {
         }
         const r = await getAllIssues(data, data.sort);
         sendResponse(res, r);
+    } catch (err) {
+        handleAPIError(err, res);
+    }
+}
+
+export async function GetIssueController(req: Request, res: Response) {
+    try {
+        const user = await getUser(req, { id: true, userType: true });
+        const issueId = req.params.issueId;
+        if (!issueId) throw new InvalidInputError("Issue ID is required");
+        const issue = await getIssue(issueId.toString(), {
+            id: true,
+            isPublic: true,
+            raisedBy: { select: { id: true, seat: { select: { room: { select: { floor: { select: { wardens: { select: { id: true } } } } } } } } } }
+        });
+        if (!issue) throw new InvalidInputError("Issue not found");
+        let allowed = false;
+        if (issue.isPublic) allowed = true;
+        else if (user.userType === 'ADMIN') allowed = true;
+        else if (user.id === issue.raisedBy.id) allowed = true;
+        else if (!issue.raisedBy.seat) throw new ImpossibleTaskError("Issue raiser does not have an assigned seat", 400);
+        else if (issue.raisedBy.seat.room.floor.wardens.some(w=> w.id === user?.id)) allowed = true;
+        if (!allowed) throw new AuthError("Not Authorised to view this issue");
+        
     } catch (err) {
         handleAPIError(err, res);
     }

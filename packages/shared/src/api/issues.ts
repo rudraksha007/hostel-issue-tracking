@@ -27,7 +27,6 @@ export const EditIssueRequest = z.object({
     isPublic: z.boolean().default(false),
     remarks: z.string().max(300),
     groupTag: z.string(),
-    status: z.enum(Object.values(Status)),
     images: z.array(z.string()).default([]),
 });
 export type EditIssueRequestT = z.infer<typeof EditIssueRequest>;
@@ -47,7 +46,7 @@ export const CommentRequest = z.object({
 });
 export type CommentRequestT = z.infer<typeof CommentRequest>;
 
-export const GetIssueRequest = z.object({
+export const GetIssuesRequest = z.object({
     issueId: z.string().optional(),
     status: z.array(z.enum(Object.values(Status))).default(Object.values(Status)),
     priority: z.array(z.enum(Object.values(Priority))).default(Object.values(Priority)),
@@ -60,7 +59,7 @@ export const GetIssueRequest = z.object({
     pageSize: z.number().min(1).max(100).default(10),
     sort: z.enum(['OLD_FIRST', 'NEW_FIRST']).default('OLD_FIRST')
 });
-export type GetIssueRequestT = z.infer<typeof GetIssueRequest>;
+export type GetIssuesRequestT = z.infer<typeof GetIssuesRequest>;
 
 
 export const GetIssuesResponse = z.object({
@@ -87,3 +86,10 @@ export const GetIssuesResponse = z.object({
     }))
 });
 export type GetIssuesResponseT = z.infer<typeof GetIssuesResponse>;
+
+
+export const GetIssueResponse = z.object({
+    id: z.string(),
+});
+
+export type GetIssueResponseT = z.infer<typeof GetIssueResponse>;

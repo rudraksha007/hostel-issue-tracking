@@ -1,0 +1,34 @@
+volumes:
+  shared:
+    driver: local
+  ollama:
+    driver: local
+networks:
+  shared:
+    driver: bridge
+services:
+  db:
+    image: postgres:18.1
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypass
+      POSTGRES_DB: mydb
+    ports:
+      - "5432:5432"
+    volumes:
+      - shared:/var/lib/postgresql/data
+    networks:
+      - shared
+  ollama:
+    image: ollama/ollama:0.15.2
+    ports:
+      - "11434:11434"
+    networks:
+      - shared
+    volumes:
+      - ollama:/root/.ollama
+  backend:
+    build: ./apps/backend
+    depends_on:
+      - db
+      - ollama

@@ -1,7 +1,7 @@
 import { prisma } from "@repo/db";
-import { makeResponse, type APIResponseT, type GetIssueRequestT, type GetIssuesResponseT } from "@repo/shared/types/api";
+import { makeResponse, type APIResponseT, type GetIssuesRequestT, type GetIssuesResponseT } from "@repo/shared/types/api";
 
-export async function getAllIssues(data: GetIssueRequestT, sort: 'OLD_FIRST' | 'NEW_FIRST' = 'OLD_FIRST'): Promise<APIResponseT<GetIssuesResponseT>> {
+export async function getAllIssues(data: GetIssuesRequestT, sort: 'OLD_FIRST' | 'NEW_FIRST' = 'OLD_FIRST'): Promise<APIResponseT<GetIssuesResponseT>> {
     const issues = await prisma.issue.findMany({
         where: {
             status: {

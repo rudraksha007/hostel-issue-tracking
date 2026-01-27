@@ -3,7 +3,7 @@ import { prisma } from "@repo/db";
 import { ServerError } from "@repo/shared/errors";
 import { makeResponse, type AnnouncementRequestT, type AnnouncementResponseT, type APIResponseT } from "@repo/shared/types/api";
 
-export async function createAnnouncement(data: AnnouncementRequestT, images: UploadedFile[]): Promise<APIResponseT<AnnouncementResponseT>> {
+export async function createAnnouncement(data: AnnouncementRequestT, images: UploadedFile[]=[]): Promise<APIResponseT<AnnouncementResponseT>> {
     let anId: string | null = null;
     await prisma.$transaction(async tx => {
         const d = await tx.user.findMany({

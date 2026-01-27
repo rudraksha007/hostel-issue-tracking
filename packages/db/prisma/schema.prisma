@@ -34,6 +34,10 @@ model User {
   updates        Announcement[]  @relation("UserUpdates")
   comments       Comment[]
   reactions      Reaction[]
+  foundItems     LostItem[]      @relation("FoundItems")
+  lostItems      LostItem[]      @relation("LostItems")
+  storedItems    LostItem[]      @relation("StoredItems")
+  claims         Claim[]
 }
 
 model Session {
@@ -51,25 +55,25 @@ model Session {
 }
 
 model Issue {
-  id           String      @id @default(cuid())
+  id           String     @id @default(cuid())
   title        String
   description  String
   images       String[]
-  priority     Priority    @default(LOW)
+  priority     Priority   @default(LOW)
   groupTag     String
   group        IssueGroup @relation(fields: [groupTag], references: [id])
   userId       String
-  raisedBy     User        @relation(fields: [userId], references: [id], name: "RaisedIssues")
+  raisedBy     User       @relation(fields: [userId], references: [id], name: "RaisedIssues")
   roomId       String
-  room         Room        @relation(fields: [roomId], references: [id])
+  room         Room       @relation(fields: [roomId], references: [id])
   assignedToId String?
-  assignedTo   User?       @relation(fields: [assignedToId], references: [id], name: "AssignedIssues")
-  status       Status      @default(REPORTED)
+  assignedTo   User?      @relation(fields: [assignedToId], references: [id], name: "AssignedIssues")
+  status       Status     @default(REPORTED)
   events       Event[]
-  isPublic     Boolean     @default(false)
+  isPublic     Boolean    @default(false)
   comments     Comment[]
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
   remarks      String?
 
   @@index([groupTag])
@@ -117,12 +121,13 @@ model Announcement {
 }
 
 model Event {
-  id        String   @id @default(cuid())
-  issueId   String
-  issue     Issue    @relation(fields: [issueId], references: [id], onDelete: Cascade)
-  timestamp DateTime @default(now())
-  status    Status
-  remarks   String?
+  id          String   @id @default(cuid())
+  issueId     String
+  issue       Issue    @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  timestamp   DateTime @default(now())
+  description String
+  status      Status
+  remarks     String?
 }
 
 model Seat {
@@ -187,6 +192,57 @@ model LivingHistory {
 
   @@index([userId])
   @@index([seatId])
+}
+
+model LostItem {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  images      String[]
+
+  lostOn   DateTime?
+  lostById String?
+  lostBy   User?     @relation(fields: [lostById], references: [id], name: "LostItems")
+
+  foundOn   DateTime?
+  foundById String?
+  foundBy   User?     @relation(fields: [foundById], references: [id], name: "FoundItems")
+
+  storedOn   DateTime?
+  storedById String?
+  storedBy   User?     @relation(fields: [storedById], references: [id], name: "StoredItems")
+
+  returnedOn DateTime?
+
+  status    ClaimStatus @default(LOST)
+  createdAt DateTime    @default(now())
+  StoreOtp  String
+  claimOtp  String
+  claims    Claim[]
+}
+
+model Claim {
+  id          String   @id @default(cuid())
+  lostItemId  String
+  lostItem    LostItem @relation(fields: [lostItemId], references: [id], onDelete: Cascade)
+  claimerId   String
+  claimer     User     @relation(fields: [claimerId], references: [id], onDelete: Cascade)
+  description String
+  date        DateTime @default(now())
+  createdAt   DateTime @default(now())
+  similarity  Float
+  success     Boolean  @default(false)
+
+  @@index([lostItemId])
+  @@index([claimerId])
+}
+
+enum ClaimStatus {
+  LOST
+  FOUND
+  STORED
+  CLAIMED
+  RETURNED
 }
 
 enum Gender {
