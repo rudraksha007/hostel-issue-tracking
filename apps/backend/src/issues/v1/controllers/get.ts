@@ -1,6 +1,5 @@
-import { getUser } from "@/lib/middlewares/session";
 import { AuthError, ImpossibleTaskError, InvalidInputError } from "@repo/shared/errors";
-import { handleAPIError } from "@repo/shared/server";
+import { getUser, handleAPIError } from "@repo/shared/server";
 import { GetIssuesRequest, sendResponse } from "@repo/shared/types/api";
 import type { Request, Response } from "express";
 import { getIssue } from "../utils";
@@ -8,7 +7,8 @@ import { getAllIssues } from "../services/get";
 
 export async function GetIssuesController(req: Request, res: Response) {
     try {
-        const user = await getUser(req, { id: true, userType: true });
+        if (!req.sessionToken) throw new AuthError("No active session found");
+        const user = await getUser(req.sessionToken, { id: true, userType: true });
         if (!user) throw new AuthError("Unauthorized");
         const data = GetIssuesRequest.parse(req.body);
         if (data.isPublic || user.userType === 'ADMIN') {}
@@ -35,7 +35,8 @@ export async function GetIssuesController(req: Request, res: Response) {
 
 export async function GetIssueController(req: Request, res: Response) {
     try {
-        const user = await getUser(req, { id: true, userType: true });
+        if (!req.sessionToken) throw new AuthError("No active session found");
+        const user = await getUser(req.sessionToken, { id: true, userType: true });
         const issueId = req.params.issueId;
         if (!issueId) throw new InvalidInputError("Issue ID is required");
         const issue = await getIssue(issueId.toString(), {

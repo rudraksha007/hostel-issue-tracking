@@ -1,4 +1,4 @@
-import { UserType } from "@repo/db";
+import { UserType } from "@repo/db/browser";
 import z from "zod";
 
 export const AnnouncementRequest = z.object({

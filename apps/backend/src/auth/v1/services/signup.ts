@@ -1,6 +1,6 @@
 import { prisma } from "@repo/db";
 import { DuplicateActionError, NotFoundError } from "@repo/shared/errors";
-import type { APIResponseT, SignupRequestT } from "@repo/shared/types/api";
+import { makeResponse, type APIResponseT, type SignupRequestT } from "@repo/shared/types/api";
 import bcrypt from "bcryptjs";
 
 export async function signup({ id, password }: SignupRequestT): Promise<APIResponseT> {
@@ -15,5 +15,5 @@ export async function signup({ id, password }: SignupRequestT): Promise<APIRespo
             isInit: true
         }
     });
-    return { success: true, statusCode: 200, msg: "User registered successfully" };
+    return makeResponse(true, 200, "User registered successfully");
 }

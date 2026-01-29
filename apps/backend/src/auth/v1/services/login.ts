@@ -1,16 +1,8 @@
-import { AuthError, DatabaseError, NotFoundError, ServerError } from "@repo/shared/errors";
+import { AuthError, NotFoundError } from "@repo/shared/errors";
 import bcrypt from "bcryptjs";
 import { prisma, UserType } from "@repo/db";
 import { ENV } from "@/lib/init";
-import type { APIResponseT, LoginRequestT } from "@repo/shared/types/api";
-
-export type LoginServiceResult = {
-    id: string;
-    name: string;
-    userType: UserType;
-    sessionToken: string;
-    age: number;
-}
+import type { APIResponseT, GetSessionResponseT, LoginRequestT, LoginServiceResult } from "@repo/shared/types/api";
 
 export async function login({ id, password, remember }: LoginRequestT, ipAddress: string, deviceInfo: string): Promise<APIResponseT<LoginServiceResult>> {
     const user = await prisma.user.findFirst({
@@ -27,7 +19,21 @@ export async function login({ id, password, remember }: LoginRequestT, ipAddress
             email: true,
             phone: true,
             password: true,
-            userType: true
+            userType: true,
+            gender: true,
+            seat: {
+                select: {
+                    seatNo: true, room: {
+                        select: {
+                            roomNo: true, floor: {
+                                select: {
+                                    number: true, block: { select: { name: true, building: { select: { name: true } } } }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     });
 
@@ -47,14 +53,31 @@ export async function login({ id, password, remember }: LoginRequestT, ipAddress
             ipAddress,
             deviceInfo,
             expires: new Date(Date.now() + age)
-        }
+        },
     });
-    const data: LoginServiceResult = {
+    const ud: GetSessionResponseT = {
         id: user.id,
         name: user.name,
-        sessionToken: sessionToken,
+        email: user.email,
+        phone: user.phone,
         userType: user.userType,
-        age
+        gender: user.gender,
+        ...(!user.seat ? {} : {
+            seat: {
+                number: user.seat.seatNo.toString().padStart(3, '0'),
+                room: user.seat.room.roomNo.toString().padStart(3, '0'),
+                floor: user.seat.room.floor.number,
+                block: user.seat.room.floor.block.name,
+                hostel: user.seat.room.floor.block.building.name
+            }
+        }),
+        refTime: Date.now()
+    };
+    const data: LoginServiceResult = {
+        id: user.id,
+        sessionToken: sessionToken,
+        age,
+        data: ud
     }
     return { success: true, data, msg: "Login successful", statusCode: 200 };
 };

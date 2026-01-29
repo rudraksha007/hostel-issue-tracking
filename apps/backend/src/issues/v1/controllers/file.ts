@@ -1,13 +1,13 @@
 import { uploadsDir } from "@/lib/init";
-import { getUser } from "@/lib/middlewares/session";
 import { AuthError } from "@repo/shared/errors";
-import { handleAPIError } from "@repo/shared/server";
+import { getUser, handleAPIError } from "@repo/shared/server";
 import { FileRequestParams } from "@repo/shared/types/api";
 import type { Request, Response } from "express";
 
 export async function IssueFileController(req: Request, res: Response) {
     try {
-        const user = await getUser(req, { id: true, userType: true, updates: { select: { id: true } } });
+        if (!req.sessionToken) throw new AuthError("No active session found");
+        const user = await getUser(req.sessionToken, { id: true, userType: true, updates: { select: { id: true } } });
         let allowed = false;
         const data = FileRequestParams.parse(req.query);
         if (user.userType === 'ADMIN') allowed = true;

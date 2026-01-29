@@ -18,10 +18,12 @@
     "@repo/db": "workspace:*",
     "@repo/shared": "workspace:*",
     "@types/cookie-parser": "^1.4.10",
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/formidable": "^3.4.6",
     "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
     "express": "^5.2.1",
     "formidable": "^3.5.4",
     "ollama": "^0.6.3"

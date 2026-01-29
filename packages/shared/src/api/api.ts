@@ -1,7 +1,19 @@
 import type { Response } from "express";
-import type { APIResponseT } from "./auth";
 import z from "zod";
 
+export const APIResponse = <T extends z.ZodTypeAny>(dataSchema: T) => z.object({
+    success: z.boolean().default(true),
+    statusCode: z.number().default(200),
+    msg: z.string().optional(),
+    data: dataSchema.optional(),
+})
+
+export type APIResponseT<T = any> = {
+    success: boolean;
+    statusCode: number;
+    msg?: string;
+    data: T;
+};
 export function makeResponse<T>(success: boolean = true, status: number = 200, msg: string = "", data?: T): APIResponseT<T> {
     const response: APIResponseT = {
         success,
@@ -27,3 +39,5 @@ export * from "./auth";
 export * from "./issues";
 export * from "./announcements";
 export * from './lnf';
+export * from "./users";
+export * from './agg';

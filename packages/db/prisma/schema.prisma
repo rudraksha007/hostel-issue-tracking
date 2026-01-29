@@ -132,7 +132,7 @@ model Event {
 
 model Seat {
   id            String          @id @default(cuid())
-  seatNo        Int
+  seatNo        String
   room          Room            @relation(fields: [roomId], references: [id])
   userId        String?         @unique
   user          User?           @relation(fields: [userId], references: [id])
@@ -144,7 +144,7 @@ model Seat {
 
 model Room {
   id           String  @id @default(cuid())
-  roomNo       Int
+  roomNo       String
   seats        Seat[]
   floor        Floor   @relation(fields: [floorId], references: [id])
   raisedIssues Issue[]
@@ -155,7 +155,7 @@ model Room {
 
 model Floor {
   id      String @id @default(cuid())
-  number  Int
+  number  String
   rooms   Room[]
   block   Block  @relation(fields: [blockId], references: [id])
   wardens User[] @relation("WardenFloors")

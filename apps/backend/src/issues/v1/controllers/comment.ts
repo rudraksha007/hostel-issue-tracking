@@ -1,6 +1,5 @@
-import { getUser } from "@/lib/middlewares/session";
 import { AuthError, ImpossibleTaskError, InvalidInputError, NotFoundError } from "@repo/shared/errors";
-import { handleAPIError } from "@repo/shared/server";
+import { getUser, handleAPIError } from "@repo/shared/server";
 import { CommentRequest, sendResponse } from "@repo/shared/types/api";
 import type { Request, Response } from "express";
 import { getComment, getIssue } from "../utils";
@@ -8,7 +7,8 @@ import { comment } from "../services/comment";
 
 export async function CommentController(req: Request, res: Response) {
     try {
-        const user = await getUser(req, { id: true, userType: true });
+        if (!req.sessionToken) throw new AuthError("No active session found");
+        const user = await getUser(req.sessionToken, { id: true, userType: true });
         if (!user) throw new AuthError("Unauthorized");
         const data = CommentRequest.parse(req.body);
         let allowed = false;

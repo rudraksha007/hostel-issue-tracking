@@ -12,6 +12,7 @@
     "@repo/db": "workspace:*",
     "@types/express": "^5.0.6",
     "express": "^5.2.1",
+    "libphonenumber-js": "^1.12.35",
     "zod": "^4.3.6"
   },
   "exports": {

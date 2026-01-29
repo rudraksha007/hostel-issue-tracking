@@ -1,5 +1,3 @@
-import { prisma, type Prisma } from "@repo/db";
-import { AuthError } from "@repo/shared/errors";
 import type { Request } from "express";
 
 export function parseSession(req: Request, _: any, next: Function) {
@@ -15,16 +13,3 @@ const d = {
     phone: true,
     userType: true,
 };
-export async function getUser<T extends Prisma.UserSelect>(req: Request, select: T = d as T): Promise<Prisma.UserGetPayload<{ select: T }>> {
-    if (!req.sessionToken) throw new AuthError("Unauthorized", 401);
-    const res = await prisma.session.findUnique({
-        where: { sessionToken: req.sessionToken },
-        select: {
-            user: {
-                select
-            }
-        }
-    });
-    if (!res) throw new AuthError("Unauthorized", 401);
-    return res.user;
-}

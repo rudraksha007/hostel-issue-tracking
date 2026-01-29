@@ -3,7 +3,8 @@
   "module": "index.ts",
   "type": "module",
   "scripts": {
-    "generate": "bunx prisma generate"
+    "generate": "bunx prisma generate",
+    "push": "bunx prisma db push"
   },
   "devDependencies": {
     "@types/bun": "latest"

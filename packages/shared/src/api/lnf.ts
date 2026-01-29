@@ -1,4 +1,4 @@
-import { ClaimStatus } from "@repo/db";
+import { ClaimStatus } from "@repo/db/browser";
 import z from "zod";
 
 export const CreateLostRequest = z.object({

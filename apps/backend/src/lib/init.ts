@@ -22,6 +22,7 @@ declare module "express" {
 export const ENV = {
     MAX_SESSION_AGE: 30 * 24 * 60 * 60, // 30 days in seconds
     PORT: process.env.PORT || 3001,
+    ROOT_PASS: process.env.ROOT_PASSWORD || (() => { throw new Error("ROOT_PASSWORD not set in env") })(),
 }
 
 export const uploadsDir = path.resolve(path.join(process.cwd(), "uploads/backend"));
@@ -63,9 +64,9 @@ export function bodyParser(req: Request, res: Response, next: NextFunction) {
                 }
             }
             req.files = result;
-            next();
         });
     }
+    next();
 }
 
 export function getDir(subPath: string) {

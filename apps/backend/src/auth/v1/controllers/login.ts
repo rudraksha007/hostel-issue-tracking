@@ -3,10 +3,12 @@ import { LoginRequest, sendResponse } from "@repo/shared/types/api";
 import type { Request, Response } from "express";
 import { login } from "../services/login";
 import { AuthError } from "@repo/shared/errors";
+import { isValidPhone, normalizePhone } from "@repo/shared";
 
 export async function LoginController(req: Request, res: Response) {
     try {
         const data = LoginRequest.parse(req.body);
+        if (isValidPhone(data.id)) data.id = normalizePhone(data.id);
         const r = await login(data, req.ip || 'N/A', req.headers['user-agent'] || "N/A");
         if(!r.success || !r.data) throw new AuthError(r.msg || "Login failed");
         else {

@@ -1,8 +1,72 @@
 @import "tailwindcss";
 
-:root {
+/* ========================================
+   LIGHT MODE (Default)
+   ======================================== */
+:root,
+.light {
   --background: #ffffff;
   --foreground: #171717;
+  
+  /* Primary colors */
+  --primary-bg: #f8fafc;
+  --secondary-bg: #f1f5f9;
+  --card-bg: #ffffff;
+  --card-border: #e2e8f0;
+  
+  /* Text colors */
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  
+  /* Accent colors */
+  --accent-cyan: #0891b2;
+  --accent-teal: #0d9488;
+  --accent-violet: #7c3aed;
+  
+  /* Status colors */
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #3b82f6;
+  
+  /* Glassmorphism */
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(226, 232, 240, 0.8);
+}
+
+/* ========================================
+   DARK MODE
+   ======================================== */
+.dark {
+  --background: #0a0d14;
+  --foreground: #ededed;
+  
+  /* Primary colors */
+  --primary-bg: #0f1219;
+  --secondary-bg: #12161f;
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --card-border: rgba(255, 255, 255, 0.1);
+  
+  /* Text colors */
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #64748b;
+  
+  /* Accent colors */
+  --accent-cyan: #22d3ee;
+  --accent-teal: #2dd4bf;
+  --accent-violet: #a78bfa;
+  
+  /* Status colors */
+  --success: #34d399;
+  --warning: #fbbf24;
+  --error: #f87171;
+  --info: #60a5fa;
+  
+  /* Glassmorphism */
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
 }
 
 @theme inline {
@@ -12,17 +76,58 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ========================================
+   THEME TRANSITION UTILITIES
+   ======================================== */
+.theme-transition {
+  transition: background-color 0.3s ease, 
+              border-color 0.3s ease, 
+              color 0.3s ease,
+              box-shadow 0.3s ease;
+}
+
+/* Theme-aware utility classes */
+.bg-theme {
+  background-color: var(--background);
+}
+
+.bg-theme-primary {
+  background-color: var(--primary-bg);
+}
+
+.bg-theme-secondary {
+  background-color: var(--secondary-bg);
+}
+
+.bg-theme-card {
+  background-color: var(--card-bg);
+}
+
+.border-theme {
+  border-color: var(--card-border);
+}
+
+.text-theme {
+  color: var(--foreground);
+}
+
+.text-theme-primary {
+  color: var(--text-primary);
+}
+
+.text-theme-secondary {
+  color: var(--text-secondary);
+}
+
+.text-theme-muted {
+  color: var(--text-muted);
 }
 
 /* Animation keyframes */
@@ -90,6 +195,20 @@ body {
   animation: counter-orbit 20s linear infinite;
 }
 
+/* Marquee Animation - Right to Left */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 25s linear infinite;
+}
+
+.animate-marquee-slow {
+  animation: marquee 35s linear infinite;
+}
+
 /* Pulse animation for loading states */
 @keyframes pulse-slow {
   0%, 100% { opacity: 1; }
@@ -98,4 +217,153 @@ body {
 
 .animate-pulse-slow {
   animation: pulse-slow 2s ease-in-out infinite;
+}
+
+/* ========================================
+   THEME-AWARE LOADING STATES
+   These styles ensure loading screens respect
+   the theme immediately without JS hydration delay
+   ======================================== */
+
+/* Loading screen background */
+.loading-screen {
+  background-color: var(--background);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Loading text */
+.loading-text {
+  color: var(--text-secondary);
+}
+
+/* Theme-aware backgrounds for pages */
+.page-bg {
+  background-color: var(--background);
+}
+
+/* Light theme specific overrides using .light class set by inline script */
+.light .page-bg-themed {
+  background-color: #f8fafc; /* slate-50 */
+}
+
+.dark .page-bg-themed {
+  background-color: #0a0d14;
+}
+
+/* Theme-aware ambient effects */
+.light .ambient-effect {
+  opacity: 0.3;
+}
+
+.dark .ambient-effect {
+  opacity: 1;
+}
+
+/* Theme-aware cards */
+.light .card-themed {
+  background: linear-gradient(to bottom right, #ffffff, #f8fafc);
+  border-color: #e2e8f0;
+}
+
+.dark .card-themed {
+  background: linear-gradient(to bottom right, #12161f, #0f1219);
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Theme-aware text */
+.light .text-themed-primary {
+  color: #1e293b;
+}
+
+.dark .text-themed-primary {
+  color: #ffffff;
+}
+
+.light .text-themed-secondary {
+  color: #475569;
+}
+
+.dark .text-themed-secondary {
+  color: #94a3b8;
+}
+
+/* Theme-aware navbar */
+.light .navbar-themed {
+  background-color: rgba(255, 255, 255, 0.8);
+  border-color: #e2e8f0;
+}
+
+.dark .navbar-themed {
+  background-color: rgba(15, 18, 25, 0.8);
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Theme-aware profile card */
+.light .profile-card-themed {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.dark .profile-card-themed {
+  background: linear-gradient(to bottom right, #12161f, #0f1219);
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Theme-aware info boxes */
+.light .info-box-cyan {
+  background-color: rgba(236, 254, 255, 0.8);
+  border-color: #a5f3fc;
+}
+
+.dark .info-box-cyan {
+  background-color: rgba(34, 211, 238, 0.1);
+  border-color: rgba(34, 211, 238, 0.2);
+}
+
+.light .info-box-amber {
+  background-color: rgba(254, 252, 232, 0.8);
+  border-color: #fde68a;
+}
+
+.dark .info-box-amber {
+  background-color: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.2);
+}
+
+/* Theme-aware buttons */
+.light .btn-cancel-themed {
+  background-color: #f1f5f9;
+  border-color: #e2e8f0;
+  color: #475569;
+}
+
+.light .btn-cancel-themed:hover {
+  background-color: #e2e8f0;
+  border-color: #cbd5e1;
+}
+
+.dark .btn-cancel-themed {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+}
+
+.dark .btn-cancel-themed:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Theme-aware list items */
+.light .list-item-themed {
+  background-color: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+.dark .list-item-themed {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.05);
 }

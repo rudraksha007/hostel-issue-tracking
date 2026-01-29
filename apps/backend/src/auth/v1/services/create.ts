@@ -1,6 +1,8 @@
+import { ENV } from "@/lib/init";
 import { prisma } from "@repo/db";
 import { DuplicateActionError } from "@repo/shared/errors";
 import { makeResponse, type APIResponseT, type CreateUserRequestT } from "@repo/shared/types/api";
+import bcrypt from "bcryptjs";
 
 export async function create({ name, email, phone, userType, gender, seat }: CreateUserRequestT): Promise<APIResponseT> {
     const dbUser = await prisma.user.findFirst({
@@ -46,4 +48,24 @@ export async function create({ name, email, phone, userType, gender, seat }: Cre
         }
     });
     return makeResponse(true, 201, "User created successfully");
+}
+
+export async function createFirstAdmin() {
+    const hash = bcrypt.hashSync(ENV.ROOT_PASS, 8);
+    await prisma.user.upsert({
+        where: {
+            id: "1"
+        },
+        update: {},
+        create: {
+            id: "1",
+            name: "Root",
+            userType: "ADMIN",
+            password: hash,
+            email: "",
+            phone: "",
+            isInit: true,
+        }
+    });
+    return makeResponse(true, 201, "First admin created successfully");
 }

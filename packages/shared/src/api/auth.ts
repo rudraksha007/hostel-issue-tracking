@@ -1,19 +1,7 @@
 import { Gender, UserType } from "@repo/db/browser";
 import z from "zod";
+import { isValidPhone } from "..";
 
-export const APIResponse = <T extends z.ZodTypeAny>(dataSchema: T) => z.object({
-    success: z.boolean().default(true),
-    statusCode: z.number().default(200),
-    msg: z.string().optional(),
-    data: dataSchema.optional(),
-})
-
-export type APIResponseT<T = any> = {
-    success: boolean;
-    statusCode: number;
-    msg?: string;
-    data?: T;
-};
 
 export const LoginRequest = z.object({
     id: z.string(),
@@ -33,10 +21,35 @@ export type SignupRequestT = z.infer<typeof SignupRequest>;
 export const CreateUserRequest = z.object({
     name: z.string(),
     email: z.email(),
-    phone: z.string().min(10),
+    phone: z.string().min(10).refine(inp=>isValidPhone(inp), { message: "Invalid phone number" }),
     userType: z.enum(Object.values(UserType)),
     gender: z.enum(Object.values(Gender)).default(Gender.PREFER_NOT_TO_SAY),
     seat: z.string().optional()
 });
 
 export type CreateUserRequestT = z.infer<typeof CreateUserRequest>;
+
+
+export const GetSessionResponse = z.object({
+    id: z.string(),
+    name: z.string(),
+    userType: z.enum(Object.values(UserType)),
+    email: z.email(),
+    phone: z.string().min(10).max(16).refine(inp=>isValidPhone(inp), { message: "Invalid phone number" }),
+    gender: z.enum(Object.values(Gender)),
+    seat: z.object({
+        number: z.string(),
+        room: z.string(),
+        floor: z.string(),
+        block: z.string(),
+        hostel: z.string(),
+    }).optional(),
+    refTime: z.number()
+});
+export type GetSessionResponseT = z.infer<typeof GetSessionResponse>;
+export type LoginServiceResult = {
+    id: string;
+    sessionToken: string;
+    age: number;
+    data: GetSessionResponseT
+}

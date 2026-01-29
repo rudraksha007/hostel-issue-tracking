@@ -16,9 +16,10 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - shared:/var/lib/postgresql/data
-    networks:
-      - shared
+      - shared:/var/lib/postgresql
+
+    # networks:
+    #   - shared
   ollama:
     image: ollama/ollama:0.15.2
     ports:

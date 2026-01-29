@@ -9,6 +9,6 @@
       "@repo/ui/*": ["./src/*"]
     }
   },
-  "include": ["."],
+  "include": [".", "../../apps/web/components/navbar.tsx", "../../apps/web/components/topbar.tsx", "../../apps/web/components/sidebar.tsx"],
   "exclude": ["node_modules", "dist"]
 }

@@ -1,6 +1,5 @@
-import { getUser } from "@/lib/middlewares/session";
 import { AuthError, InvalidInputError, NotFoundError } from "@repo/shared/errors";
-import { handleAPIError } from "@repo/shared/server";
+import { getUser, handleAPIError } from "@repo/shared/server";
 import { ReactRequest, sendResponse } from "@repo/shared/types/api";
 import type { Request, Response } from "express";
 import { getAnnouncement, getComment, getIssue } from "../utils";
@@ -8,7 +7,8 @@ import { react } from "../services/react";
 
 export async function ReactController(req: Request, res: Response) {
     try {
-        const user = await getUser(req, { id: true, userType: true });
+        if (!req.sessionToken) throw new AuthError("No active session found");
+        const user = await getUser(req.sessionToken, { id: true, userType: true });
         if (!user) throw new AuthError("Unauthorized", 401);
         const data = ReactRequest.parse(req.body);
         if (data.targetType === 'ISSUE') {

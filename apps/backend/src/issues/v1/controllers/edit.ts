@@ -1,8 +1,7 @@
-import { handleAPIError } from "@repo/shared/server";
+import { getUser, handleAPIError } from "@repo/shared/server";
 import { EditIssueRequest, sendResponse, type APIResponseT } from "@repo/shared/types/api";
 import type { Request, Response } from "express";
 import { editIssue } from "../services/edit";
-import { getUser } from "@/lib/middlewares/session";
 import { AuthError, ImpossibleTaskError, ServerError } from "@repo/shared/errors";
 import { getIssue } from "../utils";
 import type { Status } from "@repo/db";
@@ -17,7 +16,8 @@ const statusMap: Record<Status, number> = {
 
 export async function EditIssueController(req: Request, res: Response) {
     try {
-        const user = await getUser(req, { id: true, userType: true });
+        if (!req.sessionToken) throw new AuthError("No active session found");
+        const user = await getUser(req.sessionToken, { id: true, userType: true });
         if (!user) throw new AuthError("Unauthorized", 401);
         const data = EditIssueRequest.parse(req.body);
         const issue = await getIssue(data.issueId, {

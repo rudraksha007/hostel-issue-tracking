@@ -41,6 +41,10 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  /* Theme-aware loading screen variables */
+  --page-bg: #f8fafc;
+  --text-secondary-themed: #475569;
+  color-scheme: light;
 }
 
 .dark {
@@ -76,6 +80,10 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(0.269 0 0);
   --sidebar-ring: oklch(0.439 0 0);
+  /* Theme-aware loading screen variables */
+  --page-bg: #0a0d14;
+  --text-secondary-themed: #94a3b8;
+  color-scheme: dark;
 }
 
 @theme inline {
@@ -124,4 +132,21 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* ========================================
+   THEME-AWARE LOADING STATES
+   Uses CSS variables defined in :root and .dark above.
+   The inline script sets .dark on <html> before page renders,
+   so these styles work immediately without JS hydration.
+   ======================================== */
+
+/* Theme-aware page background */
+.page-bg-themed {
+  background-color: var(--page-bg);
+}
+
+/* Theme-aware secondary text */
+.text-themed-secondary {
+  color: var(--text-secondary-themed);
 }
