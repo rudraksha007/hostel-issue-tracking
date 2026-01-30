@@ -30,8 +30,11 @@ export async function getRooms(data: GetRoomsRequestT): Promise<APIResponseT<Get
                     }
                 }
             },
-            _count: {
-                select: { seats: true }
+            seats: {
+                select: {
+                    id: true,
+                    userId: true
+                }
             }
         }
     });
@@ -50,7 +53,8 @@ export async function getRooms(data: GetRoomsRequestT): Promise<APIResponseT<Get
             id: r.floor.block.building.id,
             name: r.floor.block.building.name,
         },
-        seats: r._count.seats,
+        seats: r.seats.length,
+        occupiedSeats: r.seats.filter(seat => seat.userId !== null).length
     }));
     return makeResponse(true, 200, "Rooms fetched successfully", {
         rooms: d,

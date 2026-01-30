@@ -32,6 +32,7 @@ model User {
   assignedFloors Floor[]         @relation("WardenFloors")
   livingHistory  LivingHistory[]
   updates        Announcement[]  @relation("UserUpdates")
+  createdUpdates Announcement[]  @relation(name: "CreatedUpdates")
   comments       Comment[]
   reactions      Reaction[]
   foundItems     LostItem[]      @relation("FoundItems")
@@ -59,6 +60,9 @@ model Issue {
   title        String
   description  String
   images       String[]
+  timeSlot     TimeSlot[]
+  category     String
+  subCategory  String
   priority     Priority   @default(LOW)
   groupTag     String
   group        IssueGroup @relation(fields: [groupTag], references: [id])
@@ -118,6 +122,8 @@ model Announcement {
   targetPolicy Json
   images       String[]
   recipients   User[]   @relation("UserUpdates")
+  createdById  String
+  createdBy    User     @relation(fields: [createdById], references: [id], onDelete: Cascade, name: "CreatedUpdates")
 }
 
 model Event {
@@ -165,18 +171,20 @@ model Floor {
 }
 
 model Block {
-  id         String   @id @default(cuid())
+  id         String    @id @default(cuid())
   name       String
   floors     Floor[]
-  building   Building @relation(fields: [buildingId], references: [id])
+  type       PlaceType
+  building   Building  @relation(fields: [buildingId], references: [id])
   buildingId String
 
   @@unique([name, buildingId])
 }
 
 model Building {
-  id     String  @id @default(cuid())
-  name   String  @unique
+  id     String    @id @default(cuid())
+  name   String    @unique
+  type   PlaceType
   blocks Block[]
 }
 
@@ -237,6 +245,12 @@ model Claim {
   @@index([claimerId])
 }
 
+enum PlaceType {
+  MALE
+  FEMALE
+  BOTH
+}
+
 enum ClaimStatus {
   LOST
   FOUND
@@ -295,4 +309,13 @@ enum ReactionTarget {
   COMMENT
   ISSUE
   ANNOUNCEMENT
+}
+
+enum TimeSlot {
+  A
+  B
+  C
+  D
+  E
+  F
 }

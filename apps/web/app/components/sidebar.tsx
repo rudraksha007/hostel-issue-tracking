@@ -1,6 +1,6 @@
 'use client';
 import { UserType } from "@repo/db/browser";
-import { X, Home, Settings, Users, FileText, Bell, Shield } from "lucide-react";
+import { X, Home, Settings, Users, FileText, Bell, Shield, Building2, LogOut, Bug } from "lucide-react";
 import { useMemo } from "react";
 import * as motion from "motion/react-client"
 import Link from "next/link";
@@ -11,10 +11,10 @@ export function SideBar({ path, open, setOpen }: {path: string, open: boolean, s
     const { user } = useSession();
     if (!user) return null;
     const Bars: Record<UserType, ()=>React.ReactNode> = {
-        'ADMIN': ()=> <AdminSidebar path={path} />,
-        'STUDENT': ()=> <StudentSidebar path={path} />,
-        'WARDEN': ()=> <WardenSidebar path={path} />,
-        'STAFF': ()=> <StaffSidebar path={path} />,
+        'ADMIN': ()=> <AdminSidebar path={path} toggleBar={()=>setOpen(false)} />,
+        'STUDENT': ()=> <StudentSidebar path={path} toggleBar={()=>setOpen(false)} />,
+        'WARDEN': ()=> <WardenSidebar path={path} toggleBar={()=>setOpen(false)} />,
+        'STAFF': ()=> <StaffSidebar path={path} toggleBar={()=>setOpen(false)} />,
     }
     const Bar = useMemo(() => Bars[user.userType], [user.userType, path]);
     return (
@@ -57,14 +57,13 @@ export function SideBar({ path, open, setOpen }: {path: string, open: boolean, s
     )
 }
 
-function AdminSidebar({ path }: { path: string }) {
+function AdminSidebar({ path, toggleBar }: { path: string, toggleBar: ()=>void }) {
     const menuItems = [
         { icon: Home, label: 'Dashboard', href: '/dashboard' },
         { icon: Users, label: 'Manage Users', href: '/users' },
-        { icon: FileText, label: 'Reports', href: '/reports' },
-        { icon: Bell, label: 'Announcements', href: '/announcements' },
-        { icon: Shield, label: 'Security', href: '/security' },
-        { icon: Settings, label: 'Settings', href: '/settings' },
+        { icon: Building2, label: 'Management', href: '/management' },
+        { icon: Bug, label: 'Issues', href: '/issues' },
+        { icon: LogOut, label: 'Logout', href: '/logout' },
     ];
 
     return (
@@ -73,6 +72,7 @@ function AdminSidebar({ path }: { path: string }) {
                 <Link
                     key={item.label}
                     href={item.href}
+                    onClick={toggleBar}
                     className={`flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition-all ${path === item.href ? "bg-black/10 dark:bg-white/20" : ""} duration-200 group`}
                 >
                     <item.icon className="w-5 h-5 text-slate-600 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
@@ -85,12 +85,13 @@ function AdminSidebar({ path }: { path: string }) {
     );
 }
 
-function StudentSidebar({ path }: { path: string }) {
+function StudentSidebar({ path, toggleBar }: { path: string, toggleBar: ()=>void }) {
     const menuItems = [
         { icon: Home, label: 'Dashboard', href: '/dashboard' },
         { icon: FileText, label: 'My Issues', href: '/issues' },
         { icon: Bell, label: 'Announcements', href: '/announcements' },
         { icon: Settings, label: 'Settings', href: '/settings' },
+        { icon: LogOut, label: 'Logout', href: '/logout' },
     ];
 
     return (
@@ -99,6 +100,7 @@ function StudentSidebar({ path }: { path: string }) {
                 <Link
                     key={item.label}
                     href={item.href}
+                    onClick={toggleBar}
                     className={`flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition-all ${path === item.href ? "bg-black/10 dark:bg-white/20" : ""} duration-200 group`}
                 >
                     <item.icon className="w-5 h-5 text-slate-600 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
@@ -111,13 +113,12 @@ function StudentSidebar({ path }: { path: string }) {
     );
 }
 
-function WardenSidebar({ path }: { path: string }) {
+function WardenSidebar({ path, toggleBar }: { path: string, toggleBar: ()=>void }) {
     const menuItems = [
         { icon: Home, label: 'Dashboard', href: '/dashboard' },
-        { icon: FileText, label: 'Issues', href: '/issues' },
-        { icon: Users, label: 'Students', href: '/students' },
-        { icon: Bell, label: 'Announcements', href: '/announcements' },
-        { icon: Settings, label: 'Settings', href: '/settings' },
+        { icon: Bug, label: 'Issues', href: '/issues' },
+        { icon: Users, label: 'Students', href: '/users' },
+        { icon: LogOut, label: 'Logout', href: '/logout' },
     ];
 
     return (
@@ -126,6 +127,7 @@ function WardenSidebar({ path }: { path: string }) {
                 <Link
                     key={item.label}
                     href={item.href}
+                    onClick={toggleBar}
                     className={`flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition-all ${path === item.href ? "bg-black/10 dark:bg-white/20" : ""} duration-200 group`}
                 >
                     <item.icon className="w-5 h-5 text-slate-600 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
@@ -138,12 +140,13 @@ function WardenSidebar({ path }: { path: string }) {
     );
 }
 
-function StaffSidebar({ path }: { path: string }) {
+function StaffSidebar({ path, toggleBar }: { path: string, toggleBar: ()=>void }) {
     const menuItems = [
         { icon: Home, label: 'Dashboard', href: '/dashboard' },
         { icon: FileText, label: 'Assigned Issues', href: '/issues' },
         { icon: Bell, label: 'Notifications', href: '/notifications' },
         { icon: Settings, label: 'Settings', href: '/settings' },
+        { icon: LogOut, label: 'Logout', href: '/logout' },
     ];
 
     return (
@@ -152,6 +155,7 @@ function StaffSidebar({ path }: { path: string }) {
                 <Link
                     key={item.label}
                     href={item.href}
+                    onClick={toggleBar}
                     className={`flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 transition-all ${path === item.href ? "bg-black/10 dark:bg-white/20" : ""} duration-200 group`}
                 >
                     <item.icon className="w-5 h-5 text-slate-600 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />

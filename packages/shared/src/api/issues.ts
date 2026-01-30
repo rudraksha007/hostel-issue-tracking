@@ -1,4 +1,4 @@
-import { Priority, ReactionTarget, ReactionType, Status } from "@repo/db/browser";
+import { Priority, ReactionTarget, ReactionType, Status, TimeSlot } from "@repo/db/browser";
 import z from "zod";
 
 export const CreateIssueRequest = z.object({
@@ -7,6 +7,10 @@ export const CreateIssueRequest = z.object({
     priority: z.enum(Object.values(Priority)).default(Priority.MEDIUM),
     raisedBy: z.string(), // raiser's id
     isPublic: z.boolean().default(false),
+    category: z.string().min(3).max(50),
+    subCategory: z.string().min(3).max(50),
+    timeSlot: z.array(z.enum(Object.values(TimeSlot))).default([]).refine((arr)=> arr.length > 0, { message: "At least one time slot must be selected" }),
+    groupTag: z.string().optional(),
     remarks: z.string().max(300).optional()
 });
 export type CreateIssueRequestT = z.infer<typeof CreateIssueRequest>;

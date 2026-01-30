@@ -2,10 +2,9 @@
 
 import React, { useState } from "react";
 import { Card } from "@repo/ui/components/card";
-import { Badge } from "@repo/ui/components/badge";
 import { User, Clock } from "lucide-react";
 
-type Reaction = "like" | "love" | "laugh" | "wow";
+type Reaction = "like" | "love" | "laugh" | "wow" | "comment";
 
 type Post = {
   id: string;
@@ -27,6 +26,7 @@ export function PostsPage() {
       images: [
         "https://picsum.photos/700/400?1",
         "https://picsum.photos/700/400?2",
+        "https://picsum.photos/700/400?3",
       ],
       author: "Admin",
       createdAt: new Date().toISOString(),
@@ -35,6 +35,7 @@ export function PostsPage() {
         love: 2,
         laugh: 1,
         wow: 0,
+        comment: 0,
       },
     },
     {
@@ -43,9 +44,9 @@ export function PostsPage() {
       content:
         "Join us this Friday evening for music, food stalls, and games!",
       images: [
-        "https://picsum.photos/700/400?3",
         "https://picsum.photos/700/400?4",
         "https://picsum.photos/700/400?5",
+        "https://picsum.photos/700/400?6",
       ],
       author: "Warden",
       createdAt: new Date().toISOString(),
@@ -54,6 +55,7 @@ export function PostsPage() {
         love: 6,
         laugh: 3,
         wow: 4,
+        comment: 2,
       },
     },
   ]);

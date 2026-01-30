@@ -64,6 +64,12 @@ export const GetFloorsResponse = z.object({
             id: z.string(),
             name: z.string(),
         }),
+        wardens: z.array(z.object({
+            id: z.string(),
+            name: z.string(),
+            email: z.email(),
+            phone: z.string()
+        })),
         rooms: z.number(),
         seats: z.number(),
     })),
@@ -98,6 +104,7 @@ export const GetRoomsResponse = z.object({
             name: z.string(),
         }),
         seats: z.number(),
+        occupiedSeats: z.number(),
     })),
     total: z.number(),
 });

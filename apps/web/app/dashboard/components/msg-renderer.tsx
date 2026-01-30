@@ -2,25 +2,65 @@
 import { Card, CardDescription, CardHeader, CardTitle } from "@repo/ui/components/card";
 import { Badge } from "@repo/ui/components/badge";
 import { useMemo, useState } from "react";
-import { Sparkles } from "lucide-react";
+import { Megaphone, Sparkles } from "lucide-react";
+import { Button } from "@repo/ui/components/button";
+import { CreateAnnouncementPanel } from "./create-announcement";
+import { UserType } from "@repo/db/browser";
 
 type Message = {
     id: string;
     title: string;
     content: string;
 }
-export function MessageRenderer({ init_messages }: { init_messages: Message[] }) {
-    const [msgs, setMsgs] = useState<Message[]>([{id: '0', title: 'Welcome to Hostel Tracker!', content: 'Stay updated with the latest announcements and updates from your hostel management.'}, ...init_messages]);
 
-    const comp = useMemo(()=> {
-        return msgs.map((msg, idx)=> (
+export function MessageRenderer({
+    init_messages,
+    userType,
+    canCreateAnnouncement,
+    userFloors
+}: {
+    init_messages: Message[];
+    userType: UserType;
+    canCreateAnnouncement: boolean;
+    userFloors?: string[];
+}) {
+    const [msgs, setMsgs] = useState<Message[]>(init_messages);
+    const [isPanelOpen, setIsPanelOpen] = useState(false);
+
+    const comp = useMemo(() => {
+        return msgs.map((msg, idx) => (
             <MessageCard key={msg.id} msg={msg} isNew={idx === 0} />
         ))
     }, [msgs]);
+
     return (
-        <div className="w-full overflow-auto flex flex-col p-4 gap-3">
-            {comp}
-        </div>
+        <>
+            <div className="w-full overflow-auto flex flex-col p-4 gap-3">
+                {comp}
+            </div>
+
+            {/* Floating Create Button - Bottom Right */}
+
+            {canCreateAnnouncement && (
+                <Button
+                    onClick={() => setIsPanelOpen(true)}
+                    className="fixed bottom-8! right-8! bg-primary text-primary-foreground rounded-full p-4 shadow-lg hover:shadow-xl transition-all hover:scale-110 z-100"
+                    style={{ position: 'fixed', bottom: '10dvh', right: '2rem' }}
+                    size='icon-lg'
+                    title="Create Announcement"
+                >
+                    <Megaphone className="h-6 w-6" />
+                </Button>
+            )}
+            {/* Announcement Creation Panel */}
+            {canCreateAnnouncement && (
+                <CreateAnnouncementPanel
+                    isOpen={isPanelOpen}
+                    setOpen={setIsPanelOpen}
+                    userFloors={userFloors}
+                />
+            )}
+        </>
     )
 }
 

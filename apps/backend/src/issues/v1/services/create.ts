@@ -1,5 +1,5 @@
 import type { UploadedFile } from "@/lib/init";
-import { prisma } from "@repo/db";
+import { prisma, TimeSlot } from "@repo/db";
 import { makeResponse, type APIResponseT, type CreateIssueRequestT, type CreateIssueResponseT } from "@repo/shared/types/api";
 
 export async function createIssue(data: CreateIssueRequestT, files: UploadedFile[], roomId: string): Promise<APIResponseT<CreateIssueResponseT>> {
@@ -9,7 +9,10 @@ export async function createIssue(data: CreateIssueRequestT, files: UploadedFile
             title,
             description,
             priority,
-            images: files.map(file => file.path),
+            timeSlot: data.timeSlot,
+            category: data.category,
+            subCategory: data.subCategory,
+            images: files.map(file => file.name),
             raisedBy: {
                 connect: { id: raisedBy }
             },

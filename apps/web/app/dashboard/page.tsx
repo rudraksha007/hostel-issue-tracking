@@ -4,7 +4,7 @@ import DashboardComponent from "./components/main";
 import  {Home}  from "./pages/home";
 import { Messages } from "./pages/messages";
 import { PostsPage } from "./pages/posts";
-import { Profile } from "./pages/profile";
+import  Profile  from "./pages/profile";
 import  Report  from "./pages/report";
 
 const tabs: Record<NavTabs, () => React.ReactNode> = {

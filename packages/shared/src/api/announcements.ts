@@ -19,3 +19,28 @@ export const AnnouncementResponse = z.object({
 });
 export type AnnouncementRequestT = z.infer<typeof AnnouncementRequest>;
 export type AnnouncementResponseT = z.infer<typeof AnnouncementResponse>;
+
+
+export const GetAnnouncementsRequest = z.object({
+    id: z.cuid().optional(),
+    page: z.number().min(1).default(1),
+    limit: z.number().min(1).max(100).default(10),
+});
+export type GetAnnouncementsRequestT = z.infer<typeof GetAnnouncementsRequest>;
+
+export const GetAnnouncementsResponse = z.object({
+    announcements: z.array(z.object({
+        id: z.string(),
+        title: z.string(),
+        content: z.string(),
+        createdAt: z.string(),
+        createdBy: z.object({
+            id: z.string(),
+            name: z.string(),
+            userType: z.enum(Object.values(UserType)),
+        }),
+        images: z.array(z.string()),
+    })),
+
+});
+export type GetAnnouncementsResponseT = z.infer<typeof GetAnnouncementsResponse>;

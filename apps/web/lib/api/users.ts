@@ -1,8 +1,9 @@
-import { APIResponseT, CreateUserRequestT, GetUsersRequestT, GetUsersResponseT } from "@repo/shared/types/api";
+import { APIResponseT, CreateUserRequestT, EditUserRequestT, GetUsersRequestT, GetUsersResponseT, makeResponse } from "@repo/shared/types/api";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { BackendBaseURL } from "./api";
 
-const base = 'http://localhost:3001/api/users/v1';
+const base = `${BackendBaseURL}/users/v1`;
 const api = axios.create({
     baseURL: base,
     withCredentials: true,
@@ -32,7 +33,17 @@ async function createUser(data: CreateUserRequestT) {
     }
 }
 
+async function editUser(data: EditUserRequestT) {
+    try {
+        const res = await api.post<APIResponseT>(`/edit`, data);
+        return res.data;
+    } catch (err){
+        return makeResponse(false, 500, "Failed to edit user");
+    }
+}
+
 export const UsersAPI = {
     getUsers,
     createUser,
+    editUser,
 }

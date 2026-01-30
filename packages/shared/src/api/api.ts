@@ -41,3 +41,4 @@ export * from "./announcements";
 export * from './lnf';
 export * from "./users";
 export * from './agg';
+export * from "./management";

@@ -1,8 +1,9 @@
 import { APIResponseT, GetSessionResponse, GetSessionResponseT, LoginRequestT, LoginServiceResult, SignupRequestT } from "@repo/shared/types/api";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { BackendBaseURL } from "./api";
 
-const base = 'http://localhost:3001/api/auth';
+const base = `${BackendBaseURL}/auth`;
 const api = axios.create({
     baseURL: base,
     withCredentials: true,
@@ -27,8 +28,10 @@ async function logout() {
         const res = await api.post<APIResponseT>(`/v1/logout`);
         if (!res.data.success) throw new Error(res.data.msg || "Logout failed");
         toast.success("Logout successful");
+        return true;
     } catch (error: any) {
         toast.error(error.message || "An error occurred during logout");
+        return false;
     }
 }
 

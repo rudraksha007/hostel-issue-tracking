@@ -46,7 +46,7 @@ export function bodyParser(req: Request, res: Response, next: NextFunction) {
             if (err) {
                 next(err);
             }
-            req.body = fields;
+            req.body = fields.data ? JSON.parse(fields.data[0] as string) : {};
             const result: UploadedFile[] = [];
 
             for (const key in files) {

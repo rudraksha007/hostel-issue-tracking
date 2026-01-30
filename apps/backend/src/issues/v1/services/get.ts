@@ -4,17 +4,19 @@ import { makeResponse, type APIResponseT, type GetIssuesRequestT, type GetIssues
 export async function getAllIssues(data: GetIssuesRequestT, sort: 'OLD_FIRST' | 'NEW_FIRST' = 'OLD_FIRST'): Promise<APIResponseT<GetIssuesResponseT>> {
     const issues = await prisma.issue.findMany({
         where: {
-            status: {
-                in: data.status
-            },
-            priority: {
-                in: data.priority
-            },
-            ...(data.raisedBy ? { raisedBy: { id: data.raisedBy } } : {}),
-            ...(data.assignedTo ? { assignedToId: data.assignedTo } : {}),
-            isPublic: data.isPublic,
-            ...(data.issueId ? { id: data.issueId } : {}),
-            ...(data.groupTag ? { groupTag: data.groupTag } : {})
+            ...(data.issueId ? { id: data.issueId } : {
+                status: {
+                    in: data.status
+                },
+                priority: {
+                    in: data.priority
+                },
+                ...(data.raisedBy ? { raisedBy: { id: data.raisedBy } } : {}),
+                ...(data.assignedTo ? { assignedToId: data.assignedTo } : {}),
+                isPublic: data.isPublic,
+                ...(data.issueId ? { id: data.issueId } : {}),
+                ...(data.groupTag ? { groupTag: data.groupTag } : {})
+            }),
         },
         select: {
             id: true,
@@ -51,7 +53,7 @@ export async function getAllIssues(data: GetIssuesRequestT, sort: 'OLD_FIRST' | 
             createdAt: sort === 'OLD_FIRST' ? 'asc' : 'desc'
         }
     });
-    const formatted = issues.map(iss=> ({
+    const formatted = issues.map(iss => ({
         ...iss,
         group: iss.group.id,
     }));

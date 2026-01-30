@@ -9,6 +9,7 @@ import { lnfRouter } from './lnf';
 import cors from 'cors'
 import { usersRouter } from './users';
 import { aggRouter } from './agg';
+import { managementRouter } from './management';
 
 const app = express();
 initialize();
@@ -23,11 +24,12 @@ app.use((req: Request, res: Response, next)=> {
 app.use(cookieParser(), parseSession);
 app.use(bodyParser);
 app.use("/api/auth", authRouter);
-app.use("/api/issue", issueRouter);
+app.use("/api/issues", issueRouter);
 app.use("/api/announcement", announcementRouter);
 app.use("/api/lnf", lnfRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/agg", aggRouter);
+app.use('/api/management', managementRouter);
 
 app.listen(ENV.PORT, () => {
     console.log(`Backend server running on port ${ENV.PORT}`);

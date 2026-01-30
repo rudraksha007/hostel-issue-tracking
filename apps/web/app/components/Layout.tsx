@@ -13,6 +13,7 @@ function titleFromPath(path: string, tab?: string) {
         '/dashboard:Report': 'Report',
         '/dashboard:Profile': 'Profile',
         '/users:': 'Users',
+        '/management:': 'Management',
         '/issues:': 'Issues',
         '/settings': 'Settings'
     }

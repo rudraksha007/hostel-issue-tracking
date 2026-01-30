@@ -26,6 +26,14 @@ export async function getFloors(data: GetFloorsRequestT): Promise<APIResponseT<G
             _count: {
                 select: { rooms: true }
             },
+            wardens: {
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    phone: true
+                }
+            },
             rooms: {
                 select: {
                     _count: { select: { seats: true } },
@@ -51,6 +59,7 @@ export async function getFloors(data: GetFloorsRequestT): Promise<APIResponseT<G
                 id: f.block.building.id,
                 name: f.block.building.name
             },
+            wardens: f.wardens.map(w => ({ id: w.id, name: w.name, email: w.email, phone: w.phone })),
             rooms: f._count.rooms,
             seats
         };

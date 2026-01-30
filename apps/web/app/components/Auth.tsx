@@ -16,6 +16,7 @@ export default function Auth() {
     async function handleLogin() {
         const data = await AuthAPI.login(loginForm);
         if (data) {
+            router.push('/dashboard');
             router.refresh();
         }
     }
@@ -53,7 +54,7 @@ export default function Auth() {
                     }
                 </div>
             </div>
-            <button className="py-1 bg-neutral-400 text-black rounded-lg px-4" onClick={handleLogin}>{login ? "Login" : "Signup"}</button>
+            <button className="py-1 bg-neutral-400 text-black rounded-lg px-4" onClick={login ? handleLogin : handleSignup}>{login ? "Login" : "Signup"}</button>
         </div>
     )
 }

@@ -12,3 +12,13 @@ export function isValidPhone(input: string, defaultCountry: "IN" | "US" | "GB" =
     const phone = parsePhoneNumberFromString(input, defaultCountry);
     return phone ? phone.isValid() : false;
 }
+
+export function getQueriedURL(base:string, query: Record<string, string>): string {
+    const url = new URL(`http://localhost:3001${base}`);
+    const params = new URLSearchParams();
+    Object.entries(query).forEach(([key, value]) => {
+        params.append(key, value);
+    });
+    url.search = params.toString();
+    return url.toString();
+}

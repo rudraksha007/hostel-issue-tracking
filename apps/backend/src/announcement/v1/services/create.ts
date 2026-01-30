@@ -3,26 +3,27 @@ import { prisma } from "@repo/db";
 import { ServerError } from "@repo/shared/errors";
 import { makeResponse, type AnnouncementRequestT, type AnnouncementResponseT, type APIResponseT } from "@repo/shared/types/api";
 
-export async function createAnnouncement(data: AnnouncementRequestT, images: UploadedFile[]=[]): Promise<APIResponseT<AnnouncementResponseT>> {
+export async function createAnnouncement(data: AnnouncementRequestT, author:string, images: UploadedFile[]=[]): Promise<APIResponseT<AnnouncementResponseT>> {
     let anId: string | null = null;
     await prisma.$transaction(async tx => {
+        data.targeting.users = data.targeting.users.concat([author]);
         const d = await tx.user.findMany({
             where: {
-                AND: [
-                    ...(data.targeting.users.length ? [{ id: { in: data.targeting.users } }] : []),
+                OR: [
+                    { id: { in: data.targeting.users } },
                     {
                         seat: {
                             room: {
-                                AND: [
+                                OR: [
                                     ...(data.targeting.rooms.length ? [{ id: { in: data.targeting.rooms } }] : []),
                                     {
                                         floor: {
-                                            AND: [
+                                            OR: [
                                                 ...(data.targeting.floors.length ? [{ id: { in: data.targeting.floors } }] : []),
                                                 ...(data.targeting.wardens.length ? [{ wardens: { some: { id: { in: data.targeting.wardens } } } }] : []),
                                                 {
                                                     block: {
-                                                        AND: [
+                                                        OR: [
                                                             ...(data.targeting.blocks.length ? [{ id: { in: data.targeting.blocks } }] : []),
                                                             ...(data.targeting.hostels.length ? [{ buildingId: { in: data.targeting.hostels } }] : [])
                                                         ]
@@ -43,7 +44,10 @@ export async function createAnnouncement(data: AnnouncementRequestT, images: Upl
                 title: data.title,
                 content: data.content,
                 targetPolicy: data.targeting,
-                images: images.map(img => img.path),
+                images: images.map(img => img.name),
+                createdBy: {
+                    connect: { id: author }
+                },
                 recipients: {
                     connect: d.map(u => ({ id: u.id }))
                 }

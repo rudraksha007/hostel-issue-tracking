@@ -14,7 +14,7 @@ export async function AnnounceController(req: Request, res: Response) {
             data.targeting.userTypes = data.targeting.userTypes.filter(ut => ut === 'STUDENT');
             data.targeting.wardens = [user.id];
         }
-        const r = await createAnnouncement(data, req.files || []);
+        const r = await createAnnouncement(data, user.id, req.files || []);
         sendResponse(res, r);
     } catch (err) {
         handleAPIError(err, res);

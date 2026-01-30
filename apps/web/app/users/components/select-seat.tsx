@@ -2,43 +2,16 @@ import { AggAPI } from "@/lib/api/agg";
 import { Input } from "@repo/ui/components/input";
 import { Label } from "@repo/ui/components/label";
 import { useEffect, useMemo, useState } from "react";
+import type {Seat, Room, Floor, Block, Hostel, HostelData} from '@/lib/types';
 
-export type Seat = {
-    hostel?: string;
-    block?: string;
-    floor?: string;
-    room?: string;
-    seatId?: string;
-}
-type Room = {
-    id: string;
-    roomNo: string;
-    seats?: Record<string, { id: string; seatNo: string }>;
-}
-type Floor = {
-    id: string;
-    number: string;
-    rooms?: Record<string, Room>;
-}
-type Block = {
-    id: string;
-    name: string;
-    floors?: Record<string, Floor>
-}
-type Hostel = {
-    id: string;
-    name: string;
-    blocks?: Record<string, Block>
-}
-type HostelData = Record<string, Hostel>;
 type Props = {
     loading: boolean;
     setLoading: (loading: boolean) => void;
     confSeat: (seat: string) => void;
 }
-export function SelectSeat({ loading, setLoading, confSeat }: Props) {
+export function SelectSeat({ setLoading, confSeat }: Props) {
     const [hostels, setHostels] = useState<HostelData>({});
-    const [seat, setSeat] = useState<Seat>({});
+    const [seat, setSeat] = useState<Partial<Seat>>({});
     const [allotSeat, setAllotSeat] = useState(false);
 
     useEffect(()=> {
@@ -48,99 +21,19 @@ export function SelectSeat({ loading, setLoading, confSeat }: Props) {
     }, [seat]);
 
     async function fetchData(type: 'hostels' | 'blocks' | 'floors' | 'rooms' | 'seats') {
-        try {
-            setLoading(true);
-            switch (type) {
-                case 'hostels': {
-                    const data = await AggAPI.getHostels({ page: 1, pageSize: 1000 }); // Fetch all hostels
-                    const hostelMap: HostelData = {};
-                    data.forEach(h => {
-                        hostelMap[h.id] = { id: h.id, name: h.name };
-                    });
-                    setHostels(prev => ({ ...prev, ...hostelMap }));
-                    break;
-                }
-                case 'blocks': {
-                    if (!seat.hostel) return;
-                    const data = await AggAPI.getBlocks(seat.hostel);
-                    const blockMap: Record<string, Block> = {};
-                    data.forEach(b => {
-                        blockMap[b.id] = { id: b.id, name: b.name };
-                    });
-                    setHostels(prev => {
-                        if (!seat.hostel) return prev;
-                        const updated = { ...prev };
-                        if (updated[seat.hostel]) {
-                            updated[seat.hostel].blocks = { ...updated[seat.hostel].blocks, ...blockMap };
-                        }
-                        return updated;
-                    });
-                    break;
-                }
-                case 'floors': {
-                    if (!seat.block || !seat.hostel) return;
-                    const data = await AggAPI.getFloors(seat.block);
-                    const floorMap: Record<string, Floor> = {};
-                    data.forEach(f => {
-                        floorMap[f.id] = { id: f.id, number: f.number };
-                    });
-                    setHostels(prev => {
-                        if (!seat.hostel || !seat.block) return prev;
-                        const updated = { ...prev };
-                        const hostel = updated[seat.hostel];
-                        if (hostel && hostel.blocks && hostel.blocks[seat.block]) {
-                            hostel.blocks[seat.block].floors = { ...hostel.blocks[seat.block].floors, ...floorMap };
-                        }
-                        return updated;
-                    });
-                    break;
-                }
-                case 'rooms': {
-                    if (!seat.floor || !seat.block || !seat.hostel) return;
-                    const data = await AggAPI.getRooms(seat.floor);
-                    const roomMap: Record<string, Room> = {};
-                    data.forEach(r => {
-                        roomMap[r.id] = { id: r.id, roomNo: r.roomNo };
-                    });
-                    setHostels(prev => {
-                        if (!seat.hostel || !seat.block || !seat.floor) return prev;
-                        const updated = { ...prev };
-                        const hostel = updated[seat.hostel];
-                        if (!hostel || !hostel.blocks || !hostel.blocks[seat.block] || !hostel.blocks[seat.block].floors) return prev;
-                        const block = hostel.blocks[seat.block];
-                        if (!block.floors || !block.floors[seat.floor]) return prev;
-                        block.floors[seat.floor].rooms = { ...block.floors[seat.floor].rooms, ...roomMap };
-                        return updated;
-                    });
-                    break;
-                }
-                case 'seats': {
-                    if (!seat.room || !seat.floor || !seat.block || !seat.hostel) return;
-                    const data = await AggAPI.getSeats(seat.room);
-                    const seatMap: Record<string, { id: string; seatNo: string }> = {};
-                    data.forEach(s => {
-                        seatMap[s.id] = { id: s.id, seatNo: s.number };
-                    });
-                    setHostels(prev => {
-                        const updated = { ...prev };
-                        if (!seat.hostel || !seat.block || !seat.floor || !seat.room) return prev;
-                        const hostel = updated[seat.hostel];
-                        if (!hostel || !hostel.blocks || !hostel.blocks[seat.block]) return prev;
-                        const block = hostel.blocks[seat.block];
-                        if (!block.floors || !block.floors[seat.floor]) return prev;
-                        const floor = block.floors[seat.floor];
-                        if (!floor.rooms || !floor.rooms[seat.room]) return prev;
-                        floor.rooms[seat.room].seats = { ...floor.rooms[seat.room].seats, ...seatMap };
-                        return updated;
-                    });
-                    break;
-                }
+        setLoading(true);
+        const updated = await AggAPI.fetchHierarchicalData({
+            type,
+            hostelData: hostels,
+            currentSelection: {
+                hostel: seat.hostel,
+                block: seat.block,
+                floor: seat.floor,
+                room: seat.room
             }
-        } catch (err) {
-            console.error(`Error fetching ${type}:`, err);
-        } finally {
-            setLoading(false);
-        }
+        });
+        setHostels(updated);
+        setLoading(false);
     }
     useEffect(() => {
         if (Object.keys(hostels).length > 0) return;

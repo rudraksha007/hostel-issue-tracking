@@ -16,6 +16,7 @@ export async function CreateIssueController(req: Request, res: Response) {
         });
         if (!user.seat) throw new ImpossibleTaskError("User does not have an assigned seat", 400);
         const data = CreateIssueRequest.parse(req.body);
+        if (!data.raisedBy) data.raisedBy = user.id;
         const r = await createIssue(data, req.files || [], user.seat.roomId);
         if (!r.success) throw new ServerError(r.statusCode || 500, r.msg || "Issue creation failed");
         sendResponse(res, r);

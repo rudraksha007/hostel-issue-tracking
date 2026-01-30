@@ -13,6 +13,7 @@ export async function GetIssuesController(req: Request, res: Response) {
         const data = GetIssuesRequest.parse(req.body);
         if (data.isPublic || user.userType === 'ADMIN') {}
         else if (data.issueId) {
+            // data.isPublic = undefined;
             let allowed = false;
             const i = await getIssue(data.issueId, {
                 raisedBy: { select: { id: true, seat: { select: { room: { select: { floor: { select: { wardens: { select: { id: true } } } } } } } } } }
@@ -25,7 +26,7 @@ export async function GetIssuesController(req: Request, res: Response) {
             if (user.userType === 'STAFF') data.assignedTo = user.id;
             else if (user.userType === 'WARDEN') data.warden = user.id;
             else if (user.userType === 'STUDENT') data.raisedBy = user.id;
-        }
+        }        
         const r = await getAllIssues(data, data.sort);
         sendResponse(res, r);
     } catch (err) {
