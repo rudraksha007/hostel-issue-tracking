@@ -149,7 +149,7 @@ export async function markOwner(data: MarkOwnerRequestT): Promise<APIResponseT> 
             floors: [],
             rooms: []
         }
-    });
+    }, "1", []);
     return makeResponse(true, 200, "Owner marked successfully");
 }
 
