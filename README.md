@@ -360,3 +360,7 @@ For issues, questions, or contributions, please open an issue on GitHub.
 ---
 
 Built with ❤️ for better hostel management
+
+
+Link to Demo: [Demo](https://drive.google.com/file/d/1sk8KjJFc3iHbYCd5WrLvsoAYn2hf3mMN/view?usp=sharing) <br>
+Link to Code archive: [Code](https://drive.google.com/file/d/1GCsF6uZRis158vg_xS9BKjV1ku4ZGrji/view?usp=sharing)

@@ -13,9 +13,13 @@ import { managementRouter } from './management';
 
 const app = express();
 initialize();
+
 app.use(cors({
-    origin: 'http://localhost:3000',
-    credentials: true,
+  origin: (origin, callback) => {
+    // allow all origins dynamically
+    callback(null, origin);
+  },
+  credentials: true,
 }));
 app.use((req: Request, res: Response, next)=> {
     console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}: ${req.ip}`);
