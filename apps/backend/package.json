@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "bun --watch ./src ./src/index.ts",
     "build": "bun build ./src/index.ts --outdir=./dist --target=node",
-    "start": "bun ./dist/index.js"
+    "start": "bun run ./dist/index.js"
   },
   "devDependencies": {
     "@types/bun": "latest"
@@ -15,8 +15,8 @@
     "typescript": "^5"
   },
   "dependencies": {
-    "@repo/db": "workspace:*",
-    "@repo/shared": "workspace:*",
+    "@repo/db": "*",
+    "@repo/shared": "*",
     "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
