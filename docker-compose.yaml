@@ -1,35 +1,50 @@
 volumes:
   shared:
     driver: local
-  ollama:
-    driver: local
 networks:
   shared:
     driver: bridge
 services:
   db:
     image: postgres:18.1
-    environment:
-      POSTGRES_USER: myuser
-      POSTGRES_PASSWORD: mypass
-      POSTGRES_DB: mydb
+    env_file:
+      - .env.db
     ports:
       - "5432:5432"
     volumes:
       - shared:/var/lib/postgresql
-
-    # networks:
-    #   - shared
-  ollama:
-    image: ollama/ollama:0.15.2
-    ports:
-      - "11434:11434"
     networks:
       - shared
-    volumes:
-      - ollama:/root/.ollama
   backend:
-    build: ./apps/backend
+    build:
+      context: .
+      dockerfile: ./apps/backend/Dockerfile
     depends_on:
       - db
-      - ollama
+    environment:
+      - NODE_ENV=production
+      - ROOT_PASSWORD=${ROOT_PASSWORD}
+      - PORT=${BACKEND_PORT}
+      - DATABASE_URL=${DATABASE_URL}
+    command: ["sh", "-c", "bun run generate && bun run deploy && cd apps/backend && bun run dist/index.js"]
+    volumes:
+      - shared:/app/uploads
+    ports:
+      - "3001:3001"
+    networks:
+      - shared
+  web:
+    build:
+      context: .
+      dockerfile: ./apps/web/Dockerfile
+    depends_on:
+      - backend
+    environment:
+      - NODE_ENV=production
+      - BACKEND_BASE_URL=${BACKEND_BASE_URL}
+      - DATABASE_URL=${DATABASE_URL}
+    command: ["sh", "-c", "cd apps/web && bun run next start"]
+    ports:
+      - "3000:3000"
+    networks:
+      - shared

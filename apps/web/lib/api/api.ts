@@ -1,1 +1,1 @@
-export const BackendBaseURL = "http://localhost:3001/api";
+export const BackendBaseURL = process.env.BACKEND_BASE_URL || "http://localhost:3001/api";

@@ -7,6 +7,8 @@
     "lint": "turbo run lint",
     "generate": "cd packages/db && bun run generate",
     "push": "cd packages/db && bunx prisma db push",
+    "migrate": "cd packages/db && bunx prisma migrate dev",
+    "deploy": "cd packages/db && bunx prisma migrate deploy",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types"
   },

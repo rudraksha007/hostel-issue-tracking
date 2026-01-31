@@ -1,0 +1,29 @@
+# --- global ---
+.git
+.gitignore
+node_modules
+**/node_modules
+**/.next
+**/dist
+**/build
+**/.turbo
+
+# --- env / secrets ---
+# .env.*.example
+
+# --- editor / OS ---
+.vscode
+.idea
+.DS_Store
+
+# --- logs ---
+*.log
+
+# --- other apps (IMPORTANT) ---
+apps/frontend
+apps/mobile
+apps/docs
+
+# --- tests (optional) ---
+**/__tests__
+**/*.test.*

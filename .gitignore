@@ -37,3 +37,6 @@ yarn-error.log*
 .DS_Store
 *.pem
 .vscode/
+# exclude .env* files except .env.example
+.env*
+!.env*.example
