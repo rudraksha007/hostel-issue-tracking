@@ -8,6 +8,7 @@ import { GetFloorsResponseT, GetUsersResponseT } from "@repo/shared/types/api";
 import { toast } from "react-toastify";
 import { UsersAPI } from "@/lib/api/users";
 import { UserType } from "@repo/db/browser";
+import { ManagementAPI } from "@/lib/api/management";
 
 interface EditFloorProps {
     isOpen: boolean;
@@ -25,7 +26,10 @@ type WardenType = {
 export function EditFloor({ isOpen, onClose, floor }: EditFloorProps) {
     const [formData, setFormData] = useState({
         number: floor?.number || "",
-        wardens: floor?.wardens || [] as WardenType[],
+        wardens: {
+            add: [] as WardenType[],
+            remove: [] as string[],
+        }
     });
     const [searchQuery, setSearchQuery] = useState("");
     const [searchResults, setSearchResults] = useState<GetUsersResponseT["users"]>([]);
@@ -38,7 +42,10 @@ export function EditFloor({ isOpen, onClose, floor }: EditFloorProps) {
         if (floor) {
             setFormData({
                 number: floor.number,
-                wardens: floor.wardens || [],
+                wardens: {
+                    add: [],
+                    remove: [],
+                }
             });
         }
     }, [floor]);
@@ -76,9 +83,14 @@ export function EditFloor({ isOpen, onClose, floor }: EditFloorProps) {
         
         try {
             // Dummy API call - replace this later
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            // const res = await ManagementAPI.updateFloor(floor.id, formData);
-            // if (!res.success) throw new Error(res.msg);
+            const res = await ManagementAPI.editFloor({
+                floorId: floor.id,
+                warden: {
+                    add: formData.wardens.add.map(w => w.id),
+                    remove: formData.wardens.remove
+                }
+            })
+            if (!res.success) throw new Error(res.msg);
             
             toast.success("Floor updated successfully");
             onClose();
@@ -94,7 +106,7 @@ export function EditFloor({ isOpen, onClose, floor }: EditFloorProps) {
         if (floor) {
             setFormData({
                 number: floor.number,
-                wardens: floor.wardens || [],
+                wardens: { add: [], remove: [] },
             });
         }
         setSearchQuery("");
@@ -104,7 +116,7 @@ export function EditFloor({ isOpen, onClose, floor }: EditFloorProps) {
 
     const handleSelectUser = (user: GetUsersResponseT["users"][0]) => {
         // Check if already added
-        if (formData.wardens.some(w => w.id === user.id)) {
+        if (formData.wardens.add.some(w => w.id === user.id)) {
             toast.info("This warden is already assigned");
             return;
         }
@@ -118,7 +130,10 @@ export function EditFloor({ isOpen, onClose, floor }: EditFloorProps) {
         
         setFormData(prev => ({
             ...prev,
-            wardens: [...prev.wardens, warden],
+            wardens: {
+                ...prev.wardens,
+                add: [...prev.wardens.add, warden],
+            }
         }));
         
         setSearchQuery("");
@@ -129,7 +144,10 @@ export function EditFloor({ isOpen, onClose, floor }: EditFloorProps) {
     const handleRemoveWarden = (wardenId: string) => {
         setFormData(prev => ({
             ...prev,
-            wardens: prev.wardens.filter(w => w.id !== wardenId),
+            wardens: {
+                ...prev.wardens,
+                remove: [...prev.wardens.remove, wardenId],
+            }
         }));
     };
 
@@ -179,9 +197,9 @@ export function EditFloor({ isOpen, onClose, floor }: EditFloorProps) {
                             </div>
 
                             {/* Existing Wardens */}
-                            {formData.wardens.length > 0 && (
+                            {formData.wardens.add.length > 0 && (
                                 <div className="space-y-2">
-                                    {formData.wardens.map((warden) => (
+                                    {formData.wardens.add.map((warden) => (
                                         <div 
                                             key={warden.id}
                                             className="flex items-start gap-2 p-3 border rounded-lg bg-muted/50"

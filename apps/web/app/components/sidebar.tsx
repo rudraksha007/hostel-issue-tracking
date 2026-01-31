@@ -1,27 +1,27 @@
 'use client';
 import { UserType } from "@repo/db/browser";
-import { X, Home, Settings, Users, FileText, Bell, Shield, Building2, LogOut, Bug } from "lucide-react";
+import { X, Home, Settings, Users, FileText, Bell, Shield, Building2, LogOut, Bug, TabletSmartphone } from "lucide-react";
 import { useMemo } from "react";
 import * as motion from "motion/react-client"
 import Link from "next/link";
 import { useSession } from "./session-consumer";
 
 
-export function SideBar({ path, open, setOpen }: {path: string, open: boolean, setOpen: (open: boolean) => void }) {
+export function SideBar({ path, open, setOpen }: { path: string, open: boolean, setOpen: (open: boolean) => void }) {
     const { user } = useSession();
     if (!user) return null;
-    const Bars: Record<UserType, ()=>React.ReactNode> = {
-        'ADMIN': ()=> <AdminSidebar path={path} toggleBar={()=>setOpen(false)} />,
-        'STUDENT': ()=> <StudentSidebar path={path} toggleBar={()=>setOpen(false)} />,
-        'WARDEN': ()=> <WardenSidebar path={path} toggleBar={()=>setOpen(false)} />,
-        'STAFF': ()=> <StaffSidebar path={path} toggleBar={()=>setOpen(false)} />,
+    const Bars: Record<UserType, () => React.ReactNode> = {
+        'ADMIN': () => <AdminSidebar path={path} toggleBar={() => setOpen(false)} />,
+        'STUDENT': () => <StudentSidebar path={path} toggleBar={() => setOpen(false)} />,
+        'WARDEN': () => <WardenSidebar path={path} toggleBar={() => setOpen(false)} />,
+        'STAFF': () => <StaffSidebar path={path} toggleBar={() => setOpen(false)} />,
     }
     const Bar = useMemo(() => Bars[user.userType], [user.userType, path]);
     return (
-        <>  
+        <>
             {/* Backdrop */}
             {open && (
-                <motion.div 
+                <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
@@ -30,9 +30,9 @@ export function SideBar({ path, open, setOpen }: {path: string, open: boolean, s
                     onClick={() => setOpen(false)}
                 />
             )}
-            
+
             {/* Sidebar */}
-            <motion.div 
+            <motion.div
                 initial={{ x: '-100%' }}
                 animate={{ x: open ? 0 : '-100%' }}
                 transition={{ type: 'spring', damping: 30, stiffness: 300 }}
@@ -43,7 +43,7 @@ export function SideBar({ path, open, setOpen }: {path: string, open: boolean, s
                         <h2 className="text-2xl font-bold bg-linear-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
                             Menu
                         </h2>
-                        <button 
+                        <button
                             onClick={() => setOpen(false)}
                             className="p-2 hover:bg-black/5 dark:hover:bg-white/10 rounded-xl transition-all duration-300 active:scale-95"
                         >
@@ -57,12 +57,13 @@ export function SideBar({ path, open, setOpen }: {path: string, open: boolean, s
     )
 }
 
-function AdminSidebar({ path, toggleBar }: { path: string, toggleBar: ()=>void }) {
+function AdminSidebar({ path, toggleBar }: { path: string, toggleBar: () => void }) {
     const menuItems = [
         { icon: Home, label: 'Dashboard', href: '/dashboard' },
         { icon: Users, label: 'Manage Users', href: '/users' },
         { icon: Building2, label: 'Management', href: '/management' },
         { icon: Bug, label: 'Issues', href: '/issues' },
+        { icon: TabletSmartphone, label: 'Lost and Found', href: '/lnf' },
         { icon: LogOut, label: 'Logout', href: '/logout' },
     ];
 
@@ -85,12 +86,11 @@ function AdminSidebar({ path, toggleBar }: { path: string, toggleBar: ()=>void }
     );
 }
 
-function StudentSidebar({ path, toggleBar }: { path: string, toggleBar: ()=>void }) {
+function StudentSidebar({ path, toggleBar }: { path: string, toggleBar: () => void }) {
     const menuItems = [
         { icon: Home, label: 'Dashboard', href: '/dashboard' },
         { icon: FileText, label: 'My Issues', href: '/issues' },
-        { icon: Bell, label: 'Announcements', href: '/announcements' },
-        { icon: Settings, label: 'Settings', href: '/settings' },
+        { icon: TabletSmartphone, label: 'Lost and Found', href: '/lnf' },
         { icon: LogOut, label: 'Logout', href: '/logout' },
     ];
 
@@ -113,11 +113,12 @@ function StudentSidebar({ path, toggleBar }: { path: string, toggleBar: ()=>void
     );
 }
 
-function WardenSidebar({ path, toggleBar }: { path: string, toggleBar: ()=>void }) {
+function WardenSidebar({ path, toggleBar }: { path: string, toggleBar: () => void }) {
     const menuItems = [
         { icon: Home, label: 'Dashboard', href: '/dashboard' },
         { icon: Bug, label: 'Issues', href: '/issues' },
         { icon: Users, label: 'Students', href: '/users' },
+        { icon: TabletSmartphone, label: 'Lost and Found', href: '/lnf' },
         { icon: LogOut, label: 'Logout', href: '/logout' },
     ];
 
@@ -140,12 +141,12 @@ function WardenSidebar({ path, toggleBar }: { path: string, toggleBar: ()=>void 
     );
 }
 
-function StaffSidebar({ path, toggleBar }: { path: string, toggleBar: ()=>void }) {
+function StaffSidebar({ path, toggleBar }: { path: string, toggleBar: () => void }) {
     const menuItems = [
         { icon: Home, label: 'Dashboard', href: '/dashboard' },
         { icon: FileText, label: 'Assigned Issues', href: '/issues' },
         { icon: Bell, label: 'Notifications', href: '/notifications' },
-        { icon: Settings, label: 'Settings', href: '/settings' },
+        { icon: TabletSmartphone, label: 'Lost and Found', href: '/lnf' },
         { icon: LogOut, label: 'Logout', href: '/logout' },
     ];
 

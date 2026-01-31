@@ -10,13 +10,6 @@ import {
   ShieldCheck,
 } from "lucide-react";
 
-/* Backend-ready notes:
-   - GET /api/warden/complaints -> { complaints: Complaint[] }
-   - GET /api/warden/leaves -> { leaves: LeaveRequest[] }
-   - GET /api/warden/summary -> { visitorsToday: number, lateEntries: number, drills: string, resolutionPercent: number }
-
-   Accepts optional `serverData` prop so the server can inject data during SSR.
-*/
 
 type Complaint = { id: string | number; student: string; hostel: string; issue: string; status: string; time?: string };
 type LeaveRequest = { id: string | number; student: string; hostel: string; days: number; status: string };

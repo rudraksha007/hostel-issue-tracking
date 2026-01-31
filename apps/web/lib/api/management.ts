@@ -37,7 +37,7 @@ async function createBlock(hostelId: string, data: AddBlockFormData): Promise<AP
     }
 }
 
-async function editFloor(data: EditFloorRequestT): Promise<APIResponseT> {
+async function editFloor(data: Partial<EditFloorRequestT>): Promise<APIResponseT> {
     try {
         const res = await api.post<APIResponseT>(`/v1/edit/floor`, data);
         return res.data;

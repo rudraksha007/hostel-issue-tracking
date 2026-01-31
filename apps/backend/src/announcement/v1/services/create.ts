@@ -3,7 +3,7 @@ import { prisma } from "@repo/db";
 import { ServerError } from "@repo/shared/errors";
 import { makeResponse, type AnnouncementRequestT, type AnnouncementResponseT, type APIResponseT } from "@repo/shared/types/api";
 
-export async function createAnnouncement(data: AnnouncementRequestT, author:string, images: UploadedFile[]=[]): Promise<APIResponseT<AnnouncementResponseT>> {
+export async function createAnnouncement(data: AnnouncementRequestT, author: string, images: UploadedFile[] = []): Promise<APIResponseT<AnnouncementResponseT>> {
     let anId: string | null = null;
     await prisma.$transaction(async tx => {
         data.targeting.users = data.targeting.users.concat([author]);
@@ -11,6 +11,7 @@ export async function createAnnouncement(data: AnnouncementRequestT, author:stri
             where: {
                 OR: [
                     { id: { in: data.targeting.users } },
+                    { userType: { in: data.targeting.userTypes } },
                     {
                         seat: {
                             room: {
