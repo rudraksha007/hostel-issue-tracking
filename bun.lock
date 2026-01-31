@@ -13,8 +13,8 @@
     "apps/backend": {
       "name": "backend",
       "dependencies": {
-        "@repo/db": "workspace:*",
-        "@repo/shared": "workspace:*",
+        "@repo/db": "*",
+        "@repo/shared": "*",
         "@types/cookie-parser": "^1.4.10",
         "@types/cors": "^2.8.19",
         "@types/express": "^5.0.6",
